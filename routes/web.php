@@ -12,6 +12,9 @@ Route::get('/departments', [PageController::class, 'departments'])->name('depart
 // Medicines
 Route::get('/medicines', [PageController::class, 'medicines'])->name('medicines');
 
+//Product Detail
+Route::get('/medicinedetail/{name}', [PageController::class, 'medicinedetail'])->name('medicinedetail');
+
 // Contact
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 
@@ -24,3 +27,5 @@ Route::get('/checkout', [PageController::class, 'checkout'])->name('checkout');
 // Authentication
 Route::get('/login', [PageController::class, 'login'])->name('login');
 Route::get('/register', [PageController::class, 'register'])->name('register');
+
+Route::get('/thankyou', [PageController::class, 'thankyou'])->name('thankyou');

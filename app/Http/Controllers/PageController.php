@@ -17,6 +17,11 @@ class PageController extends Controller
         return view('pages.medicines');
     }
 
+    public function medicinedetail($name) {
+        // Passing the product name to the Blade view
+        return view('pages.medicinedetail', compact('name'));
+    }
+
     public function contact() {
         return view('pages.contact');
     }
@@ -35,5 +40,8 @@ class PageController extends Controller
 
     public function register() {
         return view('pages.register');
+    }
+    public function thankyou() {
+    return view('pages.thankyou');
     }
 }

@@ -282,3 +282,10 @@ main:first-child,
   margin-top: 0 !important;
   padding-top: 0 !important;
 }
+
+.category-card.active {
+    background-color: #e9f7ef;
+    border-color: #198754;
+    transform: scale(1.05);
+    transition: all 0.2s ease-in-out;
+}

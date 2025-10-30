@@ -10,9 +10,12 @@
             <a href="{{ url('/departments') }}" class="mx-2 text-secondary text-decoration-none">Departments</a>
             <a href="{{ url('/medicines') }}" class="mx-2 text-secondary text-decoration-none">Medicines</a>
             <a href="{{ url('/contact') }}" class="mx-2 text-secondary text-decoration-none">Contact</a>
-            <a href="{{ url('/cart') }}" class="mx-2 text-secondary text-decoration-none">
-                <i class="fa-solid fa-cart-shopping me-1"></i>Cart
-            </a>
+            <a href="{{ url('/cart') }}" class="mx-2 text-secondary text-decoration-none position-relative">
+        <i class="fa-solid fa-cart-shopping me-1"></i>
+                Cart
+        <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
+        0 </span> </a>
+
             <a href="{{ url('/checkout') }}" class="mx-2 text-secondary text-decoration-none">
                 <i class="fa-solid fa-credit-card me-1"></i>Checkout
             </a>

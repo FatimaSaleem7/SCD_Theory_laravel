@@ -25,7 +25,16 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
     <!-- Page-specific JS -->
     @stack('scripts')
+
+    <!-- Global Store Script for Cart Count -->
+    <script src="{{ asset('js/store.js') }}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            updateCartCount(); // keeps cart count visible on all pages
+        });
+    </script>
 </body>
 </html>

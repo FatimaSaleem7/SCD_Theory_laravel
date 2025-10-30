@@ -43,6 +43,13 @@
                     </div>
                     <hr>
                     <h5 class="fw-bold">Total: <span id="checkoutTotal" class="text-success">Rs. 0</span></h5>
+
+                    <!-- 🛒 Back to Cart Button -->
+                    <div class="text-center mt-4">
+                        <a href="{{ url('/cart') }}" class="btn btn-outline-success px-4">
+                            <i class="fa-solid fa-arrow-left"></i> Back to Cart
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -53,25 +60,4 @@
 
 @push('scripts')
 <script src="{{ asset('js/store.js') }}"></script>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    // Display cart items in checkout summary
-    displayCheckout();
-
-    const form = document.getElementById("checkout-form");
-    if (form) {
-        form.addEventListener("submit", e => {
-            e.preventDefault();
-            if (getCart().length === 0) {
-                alert("Your cart is empty.");
-                return;
-            }
-            alert("Order placed successfully!");
-            localStorage.removeItem("cart"); // clear cart
-            displayCheckout(); // refresh summary
-            form.reset();
-        });
-    }
-});
-</script>
 @endpush
