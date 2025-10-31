@@ -22,8 +22,10 @@ function addToCart(name, price, img, btn) {
     let qty = 1;
 
     if (btn) {
-        let input = btn.closest(".card")?.querySelector("input[type='number']");
-        if (!input) input = btn.parentElement.querySelector("input[type='number']");
+        let input =
+            btn.closest(".card")?.querySelector("input[type='number']") || // inside card
+            btn.parentElement.querySelector("input[type='number']") ||     // same section
+            document.querySelector("section input[type='number']");        // detail page
         if (input) qty = parseInt(input.value) || 1;
     }
 
