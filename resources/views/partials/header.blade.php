@@ -19,10 +19,10 @@
             <a href="{{ url('/checkout') }}" class="mx-2 text-secondary text-decoration-none">
                 <i class="fa-solid fa-credit-card me-1"></i>Checkout
             </a>
-            <a href="{{ url('/login') }}" class="mx-2 text-secondary text-decoration-none">
+            <a href="{{ url('/user-login') }}" class="mx-2 text-secondary text-decoration-none">
                 <i class="fa-solid fa-right-to-bracket me-1"></i>Login
             </a>
-            <a href="{{ url('/register') }}" class="mx-2 text-secondary text-decoration-none">
+            <a href="{{ url('/user-register') }}" class="mx-2 text-secondary text-decoration-none">
                 <i class="fa-solid fa-user-plus me-1"></i>Register
             </a>
         </nav>

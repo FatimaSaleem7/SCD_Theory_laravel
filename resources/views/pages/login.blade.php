@@ -1,4 +1,5 @@
-@extends('layouts.app')
+
+@extends('layouts.frontend')
 
 @section('title', 'Login')
 
@@ -7,7 +8,7 @@
     <div class="login-container bg-light shadow p-4 rounded" style="width:100%; max-width:400px; margin-top:80px;">
         <h2 class="text-center mb-4 text-success"><i class="fa-solid fa-lock me-2"></i>Login</h2>
 
-        <form method="GET" action="{{ route('login') }}">
+        <form method="POST" action="{{ route('login') }}">
             @csrf
             <div class="mb-3">
                 <label for="email" class="form-label">Email:</label>

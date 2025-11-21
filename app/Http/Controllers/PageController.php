@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 class PageController extends Controller
 {
+    
     public function home() {
         return view('pages.home'); // include the folder name
     }
@@ -17,10 +18,12 @@ class PageController extends Controller
         return view('pages.medicines');
     }
 
-    public function medicinedetail($name) {
-        // Passing the product name to the Blade view
-        return view('pages.medicinedetail', compact('name'));
-    }
+   public function medicinedetail($id)
+{
+    $product = Medicine::findOrFail($id);
+    return view('pages.medicinedetail', compact('product'));
+}
+
 
     public function contact() {
         return view('pages.contact');

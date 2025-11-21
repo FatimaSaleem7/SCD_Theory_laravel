@@ -1,4 +1,5 @@
-@extends('layouts.app')
+
+@extends('layouts.frontend')
 
 @section('title', 'Register')
 
@@ -7,7 +8,7 @@
     <div class="register-container bg-light shadow p-4 rounded" style="width:100%; max-width:450px; margin-top:80px;">
         <h2 class="text-center mb-4 text-success"><i class="fa-solid fa-user-plus me-2"></i>Create Account</h2>
 
-        <form method="GET" action="{{ route('register') }}">
+        <form method="POST" action="{{ route('register') }}">
             @csrf
             <div class="mb-3">
                 <label for="name" class="form-label">Full Name:</label>
