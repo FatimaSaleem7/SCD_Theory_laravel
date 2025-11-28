@@ -26,12 +26,29 @@
                 </div>
 
                 <div>
-                    <label class="block font-medium text-gray-700">Category</label>
-                    <input type="text" name="category"
-                        value="{{ $medicine->category }}"
+                <label class="block font-medium text-gray-700">Category</label>
+                <select name="category"
                         class="mt-1 w-full border-gray-300 rounded-lg shadow-sm 
-                               focus:border-green-600 focus:ring-green-600">
-                </div>
+                            focus:border-green-600 focus:ring-green-600">
+                    <option value="">Select Category</option>
+                    <option value="prescription" {{ $medicine->category=='prescription' ? 'selected' : '' }}>
+                        Prescription Medicine
+                    </option>
+                    <option value="otc" {{ $medicine->category=='otc' ? 'selected' : '' }}>
+                        OTC & Wellness
+                    </option>
+                    <option value="vitamins" {{ $medicine->category=='vitamins' ? 'selected' : '' }}>
+                        Vitamins & Supplements
+                    </option>
+                    <option value="personal" {{ $medicine->category=='personal' ? 'selected' : '' }}>
+                        Personal Care
+                    </option>
+                    <option value="baby" {{ $medicine->category=='baby' ? 'selected' : '' }}>
+                        Baby & Mother Care
+                    </option>
+                </select>
+            </div>
+
 
                 <div>
                     <label class="block font-medium text-gray-700">Price</label>

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\MedicineController;
+use App\Http\Controllers\DepartmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,8 +14,8 @@ use App\Http\Controllers\MedicineController;
 // Home
 Route::get('/', [PageController::class, 'home'])->name('home');
 
-// Departments
-Route::get('/departments', [PageController::class, 'departments'])->name('departments');
+// Departments (dynamic)
+Route::get('/departments', [DepartmentController::class, 'showAllFrontend'])->name('departments');
 
 // Medicines (dynamic)
 Route::get('/medicines', [MedicineController::class, 'showAllFrontend'])->name('medicines');
@@ -58,6 +59,8 @@ Route::middleware(['auth'])->get('/profile', function () {
 // Admin Panel Routes
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
 Route::resource('medicines', MedicineController::class);
+Route::resource('departments', DepartmentController::class);
+
 });
 
 /*
