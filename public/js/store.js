@@ -1,6 +1,4 @@
-/* =========================================================
-   CART COUNT
-========================================================= */
+// ===== CART COUNT =====
 function updateCartCount() {
     const cart = getCart();
     const count = cart.reduce((sum, item) => sum + item.qty, 0);
@@ -8,9 +6,7 @@ function updateCartCount() {
     if (el) el.textContent = count;
 }
 
-/* =========================================================
-   CART HELPERS
-========================================================= */
+// ===== CART HELPERS =====
 function getCart() {
     return JSON.parse(localStorage.getItem("cart") || "[]");
 }
@@ -21,35 +17,33 @@ function saveCart(cart) {
     updateCartCount();
 }
 
-/* =========================================================
-   ADD TO CART (NOW ID-BASED)
-========================================================= */
-function addToCart(id, name, price, img, btn) {
+// ===== ADD TO CART =====
+function addToCart(name, price, img, btn) {
     let qty = 1;
 
     if (btn) {
         let input =
-            btn.closest(".card")?.querySelector("input[type='number']") ||
-            btn.parentElement.querySelector("input[type='number']") ||
-            document.querySelector("section input[type='number']");
+            btn.closest(".card")?.querySelector("input[type='number']") || // inside card
+            btn.parentElement.querySelector("input[type='number']") ||     // same section
+            document.querySelector("section input[type='number']");        // detail page
         if (input) qty = parseInt(input.value) || 1;
     }
 
     const cart = getCart();
-    const existing = cart.find(item => item.id === id);
+    const existing = cart.find(item => item.name === name);
 
     if (existing) {
         existing.qty += qty;
     } else {
-        cart.push({ id, name, price, img, qty });
+        cart.push({ name, price, img, qty });
     }
 
     saveCart(cart);
+    updateCartCount();
+    //alert(`${name} (x${qty}) added to cart!`);
 }
 
-/* =========================================================
-   DISPLAY CART PAGE
-========================================================= */
+// ===== DISPLAY CART =====
 function displayCart() {
     const cart = getCart();
     const cartContainer = document.getElementById("cart-items");
@@ -68,22 +62,18 @@ function displayCart() {
     cart.forEach((item, index) => {
         total += item.price * item.qty;
         const tr = document.createElement("tr");
-
         tr.innerHTML = `
             <td><img src="${item.img}" style="width:80px;height:80px;object-fit:contain;"></td>
             <td>${item.name}</td>
             <td>Rs. ${item.price}</td>
             <td>
                 <button class="btn btn-outline-success btn-sm" onclick="updateQty(${index}, -1)">−</button>
-                <input type="number" value="${item.qty}" min="1"
-                       class="form-control d-inline-block text-center mx-1"
-                       style="width:60px;" onchange="setQty(${index}, this.value)">
+                <input type="number" value="${item.qty}" min="1" class="form-control d-inline-block text-center mx-1" style="width:60px;" onchange="setQty(${index}, this.value)">
                 <button class="btn btn-outline-success btn-sm" onclick="updateQty(${index}, 1)">+</button>
             </td>
             <td>Rs. ${item.price * item.qty}</td>
             <td><button class="btn btn-danger btn-sm" onclick="removeItem(${index})">Remove</button></td>
         `;
-
         cartContainer.appendChild(tr);
     });
 
@@ -91,9 +81,7 @@ function displayCart() {
     updateCartCount();
 }
 
-/* =========================================================
-   QUANTITY CONTROL
-========================================================= */
+// ===== QUANTITY CONTROL =====
 function updateQty(index, delta) {
     const cart = getCart();
     cart[index].qty += delta;
@@ -113,37 +101,30 @@ function removeItem(index) {
     saveCart(cart);
 }
 
-/* =========================================================
-   DOM LOADED HANDLER
-========================================================= */
+// ===== MAIN DOM LOADED HANDLER =====
 document.addEventListener("DOMContentLoaded", () => {
-
-    /* ========== CATEGORY FILTER (FIXED FOR BOOTSTRAP) ========== */
+    // Category filtering
     document.querySelectorAll(".category-card").forEach(card => {
         card.addEventListener("click", () => {
             const category = card.dataset.category;
-
-            document.querySelectorAll(".category-card").forEach(c => c.classList.remove("active"));
-            card.classList.add("active");
-
             document.querySelectorAll(".medicine-card").forEach(med => {
-                med.style.display =
-                    category === "all" || med.dataset.category === category
-                    ? ""
+                med.style.display = (category === "all" || med.dataset.category === category)
+                    ? "block"
                     : "none";
             });
         });
     });
 
-    /* ========== CART COUNT + CART PAGE LOAD ========== */
+    // Show cart if on cart page
     displayCart();
     updateCartCount();
 
-    /* ========== CHECKOUT SUMMARY ========== */
+    // ===== CHECKOUT PAGE =====
     const checkoutForm = document.getElementById("checkout-form");
     const checkoutItemsContainer = document.getElementById("checkoutItems");
     const checkoutTotalEl = document.getElementById("checkoutTotal");
 
+    // Display checkout summary
     if (checkoutItemsContainer && checkoutTotalEl) {
         const cart = getCart();
         let total = 0;
@@ -157,31 +138,27 @@ document.addEventListener("DOMContentLoaded", () => {
                 total += item.price * item.qty;
                 const div = document.createElement("div");
                 div.classList.add("mb-2");
-
-                div.innerHTML = `
-                    <div class="d-flex justify-content-between">
-                        <span>${item.name} x ${item.qty}</span>
-                        <span>Rs. ${item.price * item.qty}</span>
-                    </div>
-                `;
-
+                div.innerHTML = `<div class="d-flex justify-content-between">
+                    <span>${item.name} x${item.qty}</span>
+                    <span>Rs. ${item.price * item.qty}</span>
+                </div>`;
                 checkoutItemsContainer.appendChild(div);
             });
             checkoutTotalEl.textContent = `Rs. ${total}`;
         }
     }
 
-    /* ========== CHECKOUT SUBMIT HANDLER ========== */
+    // Handle checkout submission
     if (checkoutForm) {
-        checkoutForm.addEventListener("submit", e => {
-            e.preventDefault();
+    checkoutForm.addEventListener("submit", e => {
+        e.preventDefault();
+        const cart = getCart();
+        if (cart.length === 0) return; // no alert
 
-            const cart = getCart();
-            if (cart.length === 0) return;
-
-            localStorage.removeItem("cart");
-            updateCartCount();
-            window.location.href = "/thankyou";
-        });
-    }
+        // Clear cart and redirect directly
+        localStorage.removeItem("cart");
+        updateCartCount();
+        window.location.href = "/thankyou";
+    });
+}
 });

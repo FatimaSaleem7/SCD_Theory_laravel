@@ -1,3 +1,4 @@
+
 @extends('layouts.frontend')
 
 @section('title', 'Medicines')
@@ -6,6 +7,8 @@
 <!-- Medicines Section -->
 <section class="py-5 mt-5">
     <div class="container text-center">
+
+        @include('partials.search')
 
         <!-- Product Categories -->
         <h2 class="text-success fw-bold mb-4">Shop by Category</h2>
@@ -75,5 +78,90 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/store.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const input = document.getElementById('globalSearch');
+    const button = document.getElementById('globalSearchBtn');
+    const dropdown = document.getElementById('globalSearchDropdown');
+    const results = document.getElementById('globalSearchResults');
+
+    function escapeHtml(text) {
+        return text.replace(/[&<>"']/g, function(m) { return ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        })[m]; });
+    }
+
+    async function searchMedicines(query) {
+        if (!query.trim()) {
+            results.innerHTML = '';
+            dropdown.style.display = 'none';
+            return;
+        }
+
+        try {
+            const res = await fetch(`/ajax/medicines/search?query=${encodeURIComponent(query)}`);
+            const data = await res.json();
+            if (!data.length) {
+                results.innerHTML = '<li class="list-group-item text-muted">No results found</li>';
+            } else {
+                results.innerHTML = data.map(item => `
+                    <li class="list-group-item list-group-item-action p-2">
+                        <a href="/medicinedetail/${item.id}" class="d-flex align-items-center text-decoration-none text-dark">
+                            <!-- Image or Placeholder -->
+                            <div class="flex-shrink-0 me-3">
+                                ${item.image 
+                                    ? `<img src="/storage/${item.image}" class="rounded border" style="width: 50px; height: 50px; object-fit: cover;">` 
+                                    : `<div class="bg-light rounded border d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;"><i class="fas fa-pills text-secondary"></i></div>`
+                                }
+                            </div>
+                            
+                            <!-- Content -->
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0 fw-bold text-dark">${escapeHtml(item.name)}</h6>
+                                <small class="text-muted d-block text-capitalize">
+                                    <i class="fas fa-tag fa-xs me-1"></i>${escapeHtml(item.category || 'Uncategorized')}
+                                </small>
+                            </div>
+
+                            <!-- Price -->
+                            <div class="text-end ms-3">
+                                <span class="badge bg-success bg-opacity-10 text-success px-2 py-1 fs-6">
+                                    Rs. ${item.price}
+                                </span>
+                            </div>
+                        </a>
+                    </li>
+                `).join('');
+            }
+            dropdown.style.display = 'block';
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    // Debounce for typing
+    let timeout;
+    input.addEventListener('keyup', function () {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => searchMedicines(input.value), 300);
+    });
+
+    // Search button click
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+        searchMedicines(input.value);
+    });
+
+    // Hide dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!dropdown.contains(e.target) && e.target !== input && e.target !== button) {
+            dropdown.style.display = 'none';
+        }
+    });
+});
+</script>
 @endpush

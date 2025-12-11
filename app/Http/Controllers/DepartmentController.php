@@ -118,4 +118,22 @@ class DepartmentController extends Controller
         $departments = Department::orderBy('created_at','desc')->get();
         return view('pages.departments', compact('departments'));
     }
+
+    public function search(Request $request)
+{
+    $query = $request->get('query');
+
+    if (empty($query)) {
+        return response()->json([]);
+    }
+
+    $departments = Department::where('name', 'LIKE', "%{$query}%")
+        ->orWhere('description', 'LIKE', "%{$query}%")
+        ->limit(10)
+        ->get(['id', 'name', 'description', 'image']);
+
+    return response()->json($departments);
+}
+
+
 }

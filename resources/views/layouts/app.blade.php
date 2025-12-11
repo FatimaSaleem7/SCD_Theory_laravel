@@ -6,7 +6,11 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <!-- Tailwind CSS CDN -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        
+        <!-- FontAwesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     </head>
 
     <body class="font-sans antialiased">
@@ -27,5 +31,7 @@
                 {{ $slot }}
             </main>
         </div>
+        
+        @stack('scripts')
     </body>
 </html>

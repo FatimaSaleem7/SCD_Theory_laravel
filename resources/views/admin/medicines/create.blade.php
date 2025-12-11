@@ -55,9 +55,12 @@
 
                 <div>
                     <label class="block font-medium text-gray-700">Image</label>
-                    <input type="file" name="image"
-                           class="mt-1 w-full border-gray-300 rounded-lg shadow-sm 
-                                  focus:border-green-600 focus:ring-green-600">
+                    <input type="file" name="image" id="imageInput"
+       class="mt-1 w-full border-gray-300 rounded-lg shadow-sm 
+              focus:border-green-600 focus:ring-green-600">
+
+<img id="previewImage" src="" class="mt-2 rounded border hidden" width="120">
+
                 </div>
 
                 <button class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg">
@@ -68,5 +71,17 @@
 
         </div>
     </div>
+<script>
+    const imageInput = document.getElementById('imageInput');
+    const preview = document.getElementById('previewImage');
+
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+            preview.classList.remove('hidden');
+        }
+    });
+</script>
 
 </x-app-layout>

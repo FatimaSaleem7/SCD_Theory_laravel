@@ -14,6 +14,7 @@
 
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-semibold">Medicines List</h3>
+            @include('admin.medicines._search')
             <a href="{{ route('admin.medicines.create') }}" class="btn btn-success px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Add Medicine</a>
         </div>
 
@@ -62,5 +63,8 @@
 
     </div>
 </div>
+@push('scripts')
+<script src="{{ asset('js/search.js') }}"></script>
+@endpush
 
 </x-app-layout>

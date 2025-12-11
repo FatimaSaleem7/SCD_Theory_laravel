@@ -131,4 +131,30 @@ class MedicineController extends Controller
         $product = Medicine::findOrFail($id);
         return view('pages.medicinedetail', compact('product'));
     }
+
+    /**
+     * AJAX search (used by frontend and admin)
+     * Accepts GET param 'q' and returns matching medicines as JSON.
+     * Matches by 'name' and 'category'
+     */
+    
+ public function search(Request $request)
+{
+    $query = $request->get('query');
+
+    if (empty($query)) {
+        return response()->json([]);
+    }
+
+    $medicines = Medicine::where(function($q) use ($query) {
+        $q->where('name', 'LIKE', "%{$query}%")
+          ->orWhere('category', 'LIKE', "%{$query}%");
+    })
+    ->limit(10)
+    ->get(['id', 'name', 'category', 'price', 'image']);
+
+    return response()->json($medicines);
+}
+
+
 }

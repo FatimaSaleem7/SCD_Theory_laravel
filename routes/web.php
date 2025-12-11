@@ -62,6 +62,11 @@ Route::resource('medicines', MedicineController::class);
 Route::resource('departments', DepartmentController::class);
 
 });
+Route::get('/ajax/medicines/search', [MedicineController::class, 'search'])->name('ajax.medicines.search');
+
+Route::get('/ajax/departments/search', 
+    [DepartmentController::class, 'search']
+)->name('ajax.departments.search');
 
 /*
 |--------------------------------------------------------------------------
