@@ -57,20 +57,26 @@ class MedicineController extends Controller
     }
 
     
-        public function update(Medicine $medicine, array $data): Medicine
+        public function update(Request $request, Medicine $medicine)
 {
-    // Image handling (optional)
-    if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
-        if ($medicine->image && Storage::disk('public')->exists($medicine->image)) {
-            Storage::disk('public')->delete($medicine->image);
-        }
-        $data['image'] = $data['image']->store('medicines','public');
-    }
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'category' => 'nullable|string|max:100',
+        'price' => 'required|integer',
+        'description' => 'nullable|string',
+        'image' => 'nullable|image|max:4096',
+    ]);
 
-    $medicine->update($data);
+    $this->service->update($medicine, $request);
 
-    return $medicine;
+    // Reload the medicine from DB to ensure updated values
+    $medicine->refresh();
+
+    return redirect()->route('admin.medicines.index')
+                     ->with('success', 'Medicine updated successfully.');
 }
+
+
 
 
     public function destroy(Medicine $medicine)
@@ -142,22 +148,23 @@ class MedicineController extends Controller
         return response()->json($medicine, 201);
     }
 
-    public function apiUpdate(Request $request, $id)
-    {
-        $medicine = $this->service->getById($id);
+  public function apiUpdate(Request $request, $id)
+{
+    $medicine = $this->service->getById($id);
 
-        $request->validate([
-            'name' => 'sometimes|string',
-            'category' => 'sometimes|string',
-            'price' => 'sometimes|numeric',
-            'description' => 'sometimes|string',
-            'image' => 'sometimes|image|max:4096',
-        ]);
+    $validatedData = $request->validate([
+        'name' => 'sometimes|required|string|max:255',
+        'category' => 'sometimes|nullable|string|max:100',
+        'price' => 'sometimes|required|numeric',
+        'description' => 'sometimes|nullable|string',
+        'image' => 'sometimes|file|image|max:4096',
+    ]);
 
-        $this->service->update($medicine, $request);
+    $updatedMedicine = $this->service->update($medicine, $validatedData);
 
-        return response()->json($medicine);
-    }
+    return response()->json($updatedMedicine->fresh(), 200);
+}
+
 
     public function apiDelete($id)
     {

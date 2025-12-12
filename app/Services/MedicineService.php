@@ -46,24 +46,22 @@ class MedicineService
      * Update existing medicine
      * Accepts Request object or plain array
      */
-    public function update(Medicine $medicine, $input): Medicine
-    {
-        $data = $this->normalizeInput($input);
-
-        if (isset($input['image']) || ($input instanceof Request && $input->hasFile('image'))) {
-            // Delete old image if exists
-            if ($medicine->image && Storage::disk('public')->exists($medicine->image)) {
-                Storage::disk('public')->delete($medicine->image);
-            }
-
-            $file = $input instanceof Request ? $input->file('image') : $input['image'];
-            $data['image'] = $this->uploadImage($file);
+  public function update(Medicine $medicine, $data): Medicine
+{
+    if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
+        // Delete old image
+        if ($medicine->image && Storage::disk('public')->exists($medicine->image)) {
+            Storage::disk('public')->delete($medicine->image);
         }
-
-        $medicine->update($data);
-
-        return $medicine;
+        $data['image'] = $data['image']->store('medicines', 'public');
     }
+
+    $medicine->update($data);
+
+    return $medicine;
+}
+
+
 
     /**
      * Delete a medicine and its image
@@ -95,26 +93,31 @@ class MedicineService
     /**
      * Normalize input: Request or array to plain array
      */
+    
     protected function normalizeInput($input): array
     {
+        $fields = ['name', 'category', 'price', 'description'];
+
         if ($input instanceof Request) {
-            return $input->only(['name', 'category', 'price', 'description']);
+            return array_filter($input->only($fields), fn($value) => $value !== null);
         }
 
-        // Plain array
-        return [
-            'name' => $input['name'] ?? null,
-            'category' => $input['category'] ?? null,
-            'price' => $input['price'] ?? 0,
-            'description' => $input['description'] ?? null,
-        ];
+        return array_filter(array_intersect_key($input, array_flip($fields)), fn($value) => $value !== null);
     }
-
-    /**
+ /**
      * Handle image upload
      */
     protected function uploadImage($image): string
     {
         return $image->store('medicines', 'public');
     }
+
+    protected function deleteOldImage(Medicine $medicine)
+    {
+        if ($medicine->image && Storage::disk('public')->exists($medicine->image)) {
+            Storage::disk('public')->delete($medicine->image);
+        }
+    }
 }
+   
+
