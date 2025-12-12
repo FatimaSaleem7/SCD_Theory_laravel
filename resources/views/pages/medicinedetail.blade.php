@@ -46,21 +46,61 @@
         </div>
 
         <!-- Customer Reviews (static placeholder) -->
-        <div class="mt-5">
-            <h4 class="text-success fw-bold mb-3">Customer Reviews</h4>
+       <div class="mt-5">
+    <h4 class="text-success fw-bold mb-3">Customer Reviews</h4>
 
-            <p class="text-muted">No reviews yet. Be the first to write one!</p>
+    @if($product->reviews->count())
+        @foreach($product->reviews as $review)
+            <div class="mb-3 p-3 bg-white rounded shadow-sm border flex justify-between items-start">
+                <div>
+                    <p class="mb-1 font-semibold">
+                        {{ $review->reviewer_name ?? 'Anonymous' }}
+                    </p>
 
-            <!-- Add Review Form -->
-            <div class="mt-3">
-                <h6 class="fw-semibold text-success mb-2">Add Your Review:</h6>
-                <div class="d-flex">
-                    <input type="text" class="form-control me-2" id="reviewInput" placeholder="Write your review...">
-                    <button class="btn btn-success btn-sm" onclick="submitReview()">Submit</button>
+                    <p class="text-muted">{{ $review->content }}</p>
+
+                    @if($review->rating)
+                        <p class="text-warning mt-1">
+                            Rating: 
+                            @for($i=1; $i<=5; $i++)
+                                @if($i <= $review->rating)
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                @else
+                                    <i class="far fa-star text-gray-300"></i>
+                                @endif
+                            @endfor
+                        </p>
+                    @endif
                 </div>
+
+                @auth
+                    @if(auth()->user()->is_admin ?? false) {{-- Optional admin check --}}
+                        <form action="{{ route('reviews.destroy', $review->id) }}" method="POST" onsubmit="return confirm('Delete this review?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    @endif
+                @endauth
             </div>
-        </div>
+        @endforeach
+    @else
+        <p class="text-muted">No reviews yet. Be the first to write one!</p>
+    @endif
+
+    <!-- Add Review Form -->
+    <div class="mt-3">
+        <h6 class="fw-semibold text-success mb-2">Add Your Review:</h6>
+        <form action="{{ route('reviews.store', $product->id) }}" method="POST">
+            @csrf
+            <input type="text" name="reviewer_name" class="form-control mb-2" placeholder="Your Name (optional)">
+            <textarea name="content" class="form-control mb-2" placeholder="Write your review..." required></textarea>
+            <input type="number" name="rating" min="1" max="5" class="form-control mb-2" placeholder="Rating (1-5)">
+            <button class="btn btn-success btn-sm">Submit</button>
+        </form>
     </div>
+</div>
+
 </section>
 @else
 <section class="py-5 mt-5 text-center">
