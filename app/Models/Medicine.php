@@ -16,4 +16,10 @@ class Medicine extends Model
         'description',
         'image',
     ];
+
+    // One medicine has many reviews
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }

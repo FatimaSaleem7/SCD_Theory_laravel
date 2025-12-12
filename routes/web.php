@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\ReviewController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -67,6 +69,13 @@ Route::get('/ajax/medicines/search', [MedicineController::class, 'search'])->nam
 Route::get('/ajax/departments/search', 
     [DepartmentController::class, 'search']
 )->name('ajax.departments.search');
+
+// Add a review for a medicine
+Route::post('/medicines/{medicine}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+
+// Delete a review
+Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+
 
 /*
 |--------------------------------------------------------------------------

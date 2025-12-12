@@ -4,37 +4,33 @@ namespace App\Http\Controllers;
 
 use App\Models\Medicine;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use App\Services\MedicineService;
 use Exception;
 
 class MedicineController extends Controller
 {
-    // Protect admin actions with auth middleware (adjust in routes if needed).
-    public function __construct()
+    protected $service;
+
+    public function __construct(MedicineService $medicineService)
     {
-        // optional: apply auth to admin resource routes only in routes/web.php
+        $this->service = $medicineService;
     }
 
-    /**
-     * Admin: list all medicines
-     */
+    /* -------------------
+       Web Admin Methods
+       ------------------- */
+
     public function index()
     {
-        $medicines = Medicine::orderBy('created_at', 'desc')->get();
+        $medicines = $this->service->getAll();
         return view('admin.medicines.index', compact('medicines'));
     }
 
-    /**
-     * Admin: show create form
-     */
     public function create()
     {
         return view('admin.medicines.create');
     }
 
-    /**
-     * Admin: store new medicine
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -46,115 +42,128 @@ class MedicineController extends Controller
         ]);
 
         try {
-            $data = $request->only(['name','category','price','description']);
-
-            if ($request->hasFile('image')) {
-                $data['image'] = $request->file('image')->store('medicines','public');
-            }
-
-            Medicine::create($data);
-
-            return redirect()->route('admin.medicines.index')->with('success','Medicine added successfully.');
+            $this->service->create($request);
+            return redirect()->route('admin.medicines.index')
+                             ->with('success','Medicine added successfully.');
         } catch (Exception $e) {
-            return redirect()->back()->withInput()->with('error','Error: '.$e->getMessage());
+            return redirect()->back()->withInput()
+                             ->with('error','Error: '.$e->getMessage());
         }
     }
 
-    /**
-     * Admin: edit form
-     */
     public function edit(Medicine $medicine)
     {
         return view('admin.medicines.edit', compact('medicine'));
     }
 
-    /**
-     * Admin: update row
-     */
-    public function update(Request $request, Medicine $medicine)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'category' => 'nullable|string|max:100',
-            'price' => 'required|integer',
-            'description' => 'nullable|string',
-            'image' => 'nullable|image|max:4096',
-        ]);
-
-        try {
-            $data = $request->only(['name','category','price','description']);
-
-            if ($request->hasFile('image')) {
-                $data['image'] = $request->file('image')->store('medicines','public');
-            }
-
-            $medicine->update($data);
-
-            return redirect()->route('admin.medicines.index')->with('success','Medicine updated successfully.');
-        } catch (Exception $e) {
-            return redirect()->back()->withInput()->with('error','Error: '.$e->getMessage());
+    
+        public function update(Medicine $medicine, array $data): Medicine
+{
+    // Image handling (optional)
+    if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
+        if ($medicine->image && Storage::disk('public')->exists($medicine->image)) {
+            Storage::disk('public')->delete($medicine->image);
         }
+        $data['image'] = $data['image']->store('medicines','public');
     }
 
-    /**
-     * Admin: delete a medicine
-     */
+    $medicine->update($data);
+
+    return $medicine;
+}
+
+
     public function destroy(Medicine $medicine)
     {
         try {
-            $medicine->delete();
-            return redirect()->route('admin.medicines.index')->with('success','Medicine deleted.');
+            $this->service->delete($medicine);
+            return redirect()->route('admin.medicines.index')
+                             ->with('success','Medicine deleted.');
         } catch (Exception $e) {
             return redirect()->back()->with('error','Error: '.$e->getMessage());
         }
     }
 
     /* -------------------
-       Frontend methods
+       Frontend Methods
        ------------------- */
 
-    /**
-     * Frontend: show all medicines (replaces your hardcoded page)
-     */
     public function showAllFrontend()
     {
-        $medicines = Medicine::orderBy('created_at','desc')->get();
+        $medicines = $this->service->getAll();
         return view('pages.medicines', compact('medicines'));
     }
 
-    /**
-     * Frontend: single medicine detail
-     * uses numeric id (keeps your existing route signature)
-     */
     public function showFrontend($id)
     {
-        $product = Medicine::findOrFail($id);
+        $product = $this->service->getById($id);
         return view('pages.medicinedetail', compact('product'));
     }
 
-    /**
-     * AJAX search (used by frontend and admin)
-     * Accepts GET param 'q' and returns matching medicines as JSON.
-     * Matches by 'name' and 'category'
-     */
-    
- public function search(Request $request)
-{
-    $query = $request->get('query');
+    public function search(Request $request)
+    {
+        $query = $request->get('query');
 
-    if (empty($query)) {
-        return response()->json([]);
+        if (empty($query)) {
+            return response()->json([]);
+        }
+
+        $medicines = $this->service->search($query);
+
+        return response()->json($medicines);
     }
 
-    $medicines = Medicine::where(function($q) use ($query) {
-        $q->where('name', 'LIKE', "%{$query}%")
-          ->orWhere('category', 'LIKE', "%{$query}%");
-    })
-    ->limit(10)
-    ->get(['id', 'name', 'category', 'price', 'image']);
+    /* -------------------
+       API Methods
+       ------------------- */
 
-    return response()->json($medicines);
-}
+    public function apiIndex()
+    {
+        return response()->json($this->service->getAll());
+    }
 
+    public function apiShow($id)
+    {
+        return response()->json($this->service->getById($id));
+    }
 
+    public function apiStore(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'category' => 'nullable|string',
+            'price' => 'required|numeric',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image|max:4096',
+        ]);
+
+        $medicine = $this->service->create($request);
+
+        return response()->json($medicine, 201);
+    }
+
+    public function apiUpdate(Request $request, $id)
+    {
+        $medicine = $this->service->getById($id);
+
+        $request->validate([
+            'name' => 'sometimes|string',
+            'category' => 'sometimes|string',
+            'price' => 'sometimes|numeric',
+            'description' => 'sometimes|string',
+            'image' => 'sometimes|image|max:4096',
+        ]);
+
+        $this->service->update($medicine, $request);
+
+        return response()->json($medicine);
+    }
+
+    public function apiDelete($id)
+    {
+        $medicine = $this->service->getById($id);
+        $this->service->delete($medicine);
+
+        return response()->json(['message' => 'Medicine deleted']);
+    }
 }
