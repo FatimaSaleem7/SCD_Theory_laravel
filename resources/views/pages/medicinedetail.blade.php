@@ -35,10 +35,10 @@
 
                 <!-- Buttons -->
                 <div class="mt-4">
-                    <button class="btn btn-success me-2"
-                        onclick="addToCart('{{ $product->name }}', {{ $product->price }}, '{{ $product->image ? asset('storage/'.$product->image) : asset('image/placeholder.png') }}', this)">
-                        Add to Cart
-                    </button>
+                   <button class="btn btn-success me-2"
+    onclick="addToCart({{ $product->id }}, '{{ $product->name }}', {{ $product->price }}, '{{ $product->image ? asset('storage/'.$product->image) : asset('image/placeholder.png') }}', this)">
+    Add to Cart
+</button>
                     <a href="{{ url('/cart') }}" class="btn btn-outline-success me-2">Go to Cart</a>
                     <a href="{{ route('medicines') }}" class="btn btn-outline-secondary">Back to Medicines</a>
                 </div>

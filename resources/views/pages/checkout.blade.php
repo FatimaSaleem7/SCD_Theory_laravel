@@ -15,19 +15,19 @@
                     <form id="checkout-form">
                         <div class="mb-3">
                             <label class="form-label">Full Name</label>
-                            <input type="text" class="form-control" required>
+                            <input type="text" class="form-control" name="customer_name" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Email</label>
-                            <input type="email" class="form-control" required>
+                            <input type="email" class="form-control" name="customer_email" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Phone</label>
-                            <input type="text" class="form-control" required>
+                            <input type="text" class="form-control" name="customer_phone" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Address</label>
-                            <textarea class="form-control" rows="3" required></textarea>
+                            <textarea class="form-control" rows="3" name="customer_address" rows="3" required></textarea>
                         </div>
                         <button type="submit" class="btn btn-success w-100">Place Order</button>
                     </form>
@@ -44,7 +44,7 @@
                     <hr>
                     <h5 class="fw-bold">Total: <span id="checkoutTotal" class="text-success">Rs. 0</span></h5>
 
-                    <!-- 🛒 Back to Cart Button -->
+                    <!--  Back to Cart Button -->
                     <div class="text-center mt-4">
                         <a href="{{ url('/cart') }}" class="btn btn-outline-success px-4">
                             <i class="fa-solid fa-arrow-left"></i> Back to Cart
@@ -58,6 +58,3 @@
 </section>
 @endsection
 
-@push('scripts')
-<script src="{{ asset('js/store.js') }}"></script>
-@endpush

@@ -5,6 +5,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\OrderController;
 
 
 /*
@@ -76,6 +77,13 @@ Route::post('/medicines/{medicine}/reviews', [ReviewController::class, 'store'])
 // Delete a review
 Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 
+// Place Order
+Route::post('/place_order', [OrderController::class, 'store'])
+     ->name('order.store');
+
+     // Order History
+Route::get('/order_history', [OrderController::class, 'history'])
+     ->name('order.history');
 
 /*
 |--------------------------------------------------------------------------

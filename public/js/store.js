@@ -18,7 +18,7 @@ function saveCart(cart) {
 }
 
 // ===== ADD TO CART =====
-function addToCart(name, price, img, btn) {
+function addToCart(id, name, price, img, btn) {
     let qty = 1;
 
     if (btn) {
@@ -30,12 +30,12 @@ function addToCart(name, price, img, btn) {
     }
 
     const cart = getCart();
-    const existing = cart.find(item => item.name === name);
+    const existing = cart.find(item => item.id === id);
 
     if (existing) {
         existing.qty += qty;
     } else {
-        cart.push({ name, price, img, qty });
+        cart.push({id, name, price, img, qty });
     }
 
     saveCart(cart);
@@ -149,16 +149,46 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Handle checkout submission
-    if (checkoutForm) {
+        // Clear cart and redirect on success
+        if (checkoutForm) {
     checkoutForm.addEventListener("submit", e => {
         e.preventDefault();
-        const cart = getCart();
-        if (cart.length === 0) return; // no alert
 
-        // Clear cart and redirect directly
-        localStorage.removeItem("cart");
-        updateCartCount();
-        window.location.href = "/thankyou";
+        const cart = getCart();
+        if (cart.length === 0) return;
+
+        const formData = {
+            customer_name: checkoutForm.customer_name.value,
+            customer_email: checkoutForm.customer_email.value,
+            customer_phone: checkoutForm.customer_phone.value,
+            customer_address: checkoutForm.customer_address.value,
+            cart: cart.map(item => ({
+                id: item.id,
+                price: item.price,
+                quantity: item.qty
+            })),
+            total: cart.reduce((sum, item) => sum + item.price * item.qty, 0)
+        };
+
+        fetch("/place_order", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document
+                    .querySelector('meta[name="csrf-token"]')
+                    .getAttribute("content")
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                localStorage.removeItem("cart");
+                updateCartCount();
+                window.location.href = "/thankyou";
+            }
+        });
     });
+    
 }
 });

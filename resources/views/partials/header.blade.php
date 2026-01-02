@@ -9,6 +9,8 @@
             <a href="{{ url('/#about') }}" class="mx-2 text-secondary text-decoration-none">About Us</a>
             <a href="{{ url('/departments') }}" class="mx-2 text-secondary text-decoration-none">Departments</a>
             <a href="{{ url('/medicines') }}" class="mx-2 text-secondary text-decoration-none">Medicines</a>
+            <a href="{{ url('/order_history') }}" class="mx-2 text-secondary text-decoration-none">My Orders</a>
+
             <a href="{{ url('/contact') }}" class="mx-2 text-secondary text-decoration-none">Contact</a>
             <a href="{{ url('/cart') }}" class="mx-2 text-secondary text-decoration-none position-relative">
         <i class="fa-solid fa-cart-shopping me-1"></i>
